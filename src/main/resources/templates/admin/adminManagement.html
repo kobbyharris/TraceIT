@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin and User Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <style>
+        .clickable:hover {
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+        .clickable:active {
+            transform: scale(0.98);
+            background-color: #e5e7eb;
+        }
+    </style>
+
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('hidden');
+    }
+
+    function toggleDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('hidden');
+}
+document.addEventListener('click', function (event) {
+    const dropdown = document.getElementById('profileDropdown');
+    const button = document.getElementById('profileButton');
+
+    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const adminList = document.getElementById('admin-list');
+
+    // Fetch admins from backend
+    async function fetchAdmins() {
+        try {
+            const response = await fetch('http://localhost:8080/api/admins'); // Include port number
+            if (!response.ok) {
+                throw new Error('Failed to fetch admins');
+            }
+            const admins = await response.json();
+            renderAdmins(admins);
+        } catch (error) {
+            console.error('Error fetching admins:', error);
+            adminList.innerHTML = '<p class="text-red-600">Error loading admins. Please try again later.</p>';
+        }
+    }
+
+    // Render admin cards
+    function renderAdmins(admins) {
+        adminList.innerHTML = ''; // Clear existing cards
+        if (admins.length === 0) {
+            adminList.innerHTML = '<p>No admins found.</p>';
+        } else {
+            admins.forEach(admin => {
+                const card = document.createElement('div');
+                card.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'border', 'clickable');
+                card.innerHTML = `
+                    <p class="font-semibold text-gray-800">${admin.name}</p>
+                    <p class="text-gray-600">${admin.email}</p>
+                    <button class="text-red-600 mt-2" onclick="deleteAdmin(${admin.id})">Delete</button>
+                `;
+                adminList.appendChild(card);
+            });
+        }
+    }
+
+    async function fetchAdmins() {
+    try {
+        const response = await fetch('http://localhost:8080/api/admins');
+        if (!response.ok) {
+            throw new Error('Failed to fetch admins');
+        }
+        const admins = await response.json();
+        console.log(admins); // Check the response here
+        renderAdmins(admins);
+    } catch (error) {
+        console.error('Error fetching admins:', error);
+    }
+}
+
+
+    // Add event listener to form submission
+    const adminForm = document.getElementById('admin-form');
+    adminForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('http://localhost:8080/api/admins', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to add admin');
+            }
+            fetchAdmins();  // Refresh the list after adding
+            adminForm.reset(); // Clear form
+        } catch (error) {
+            console.error('Error adding admin:', error);
+        }
+    });
+
+    // Initial fetch
+    fetchAdmins();
+});
+const baseUrl = `http://${window.location.hostname}:8080/api/admins`;
+
+
+</script>
+    
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-gray-100 text-gray-800 w-64 h-screen hidden md:block fixed md:relative z-40 flex flex-col">
+            <div class="px-4 py-6 flex items-center border-b border-gray-300">
+                <img src="/build/img/app-logo.png" class="w-8 h-8 rounded-full" alt="Logo">
+                <p class="text-xl ml-3 font-semibold">Brand</p>
+                <button onclick="toggleSidebar()" class="ml-auto md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <!-- Section nav -->
+            <div class="relative">
+                <div class="p-4 mt-auto">
+                    <p class="font-semibold text-gray-600 mb-2">Menu</p>
+                    <div class="flex flex-col gap-2">
+                                <!-- Dashboard Link -->
+                                <a href="index.html" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/fluency-systems-filled/50/dashboard-layout.png" alt="dashboard-layout"/>
+                                    Dashboard
+                                </a>
+                                <!-- Tracking Link -->
+                                <a href="/Tracking" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-glyphs/50/order-on-the-way.png" alt="order-on-the-way"/>
+                                    Tracking
+                                </a>
+                                <!-- Vehicles Link -->
+                                <a href="vehicle.html" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-filled/50/people-in-car-side-view.png" alt="people-in-car-side-view"/>
+                                    Vehicles
+                                </a>
+                                <!-- Drivers Link -->
+                                <a href="/Drivers" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-glyphs/50/driver.png" alt="driver"/>
+                                    Drivers
+                                </a>
+                               
+                            </div>
+                        </div>
+                
+                <!-- Account Manage Section -->
+<div class="p-4 mt-auto">
+    <p class="font-semibold text-gray-600 mb-2">Account Manage</p>
+    <div class="flex flex-col gap-2"> 
+                <!-- Settings Link -->
+                <a href="Settings.html" 
+                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/material-outlined/50/settings.png" alt="settings"/>
+                    Settings
+                </a>
+                <!-- Logout Button -->
+                <a href="/logout" 
+                class="flex items-center px-2 py-2 text-red-600 hover:bg-red-100 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" 
+                            d="M12.293 15.707a1 1 0 01-1.414 0L7 12.414l-1.293 1.293a1 1 0 01-1.414-1.414L5.586 11 3.293 8.707a1 1 0 111.414-1.414L7 9.586l3.293-3.293a1 1 0 011.414 1.414L8.414 11l3.293 3.293a1 1 0 010 1.414z" 
+                            clip-rule="evenodd" />
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+            </div>
+        </div>
+        
+
+        <!-- Main Content -->
+        <div class="flex-1 bg-white overflow-y-auto">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-300 flex items-center md:hidden">
+                <button onclick="toggleSidebar()" class="md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Navigation Section -->
+            <div class="px-6 py-4 flex items-center justify-between">
+                <!-- Breadcrumb or Title -->
+                <nav class="text-gray-600 text-sm">
+                    <span class="text-gray-800 font-semibold text-2xl">Admin Management</span>
+                </nav>
+
+                <div class="relative z-50">
+                    <!-- Profile Image -->
+                    <button onclick="toggleDropdown()" id="profileButton" class="relative focus:outline-none">
+                        <img src="https://via.placeholder.com/40" 
+                            alt="User Profile" 
+                            class="w-10 h-10 rounded-full border border-gray-300">
+                    </button>
+                
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" 
+                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                        <div class="py-2">
+                            <p class="px-4 py-2 text-gray-600 font-semibold">John Doe</p>
+                            <hr class="border-gray-300">
+                            <a href="Settings.html" 
+                               class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="/logout" 
+                               class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        <!-- Admin Management Section -->
+        <div class="p-6">
+        
+
+            <!-- Admin List -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="admin-list">
+                <!-- Admin cards will be dynamically added here -->
+            </div>
+
+            <!-- Add New Admin Section -->
+            <div class="mt-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Add New Admin</h3>
+                <form id="admin-form" class="space-y-4">
+                    <input type="text" id="name" placeholder="Name" class="w-full px-4 py-2 border rounded-lg shadow-sm" required>
+                    <input type="email" id="email" placeholder="Email" class="w-full px-4 py-2 border rounded-lg shadow-sm" required>
+                    <input type="password" id="password" placeholder="Password" class="w-full px-4 py-2 border rounded-lg shadow-sm" required>
+                    <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm">Add Admin</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Overview cards can go here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const adminList = document.getElementById('admin-list');
+            const adminForm = document.getElementById('admin-form');
+
+            // Sample data for initial admins
+            let admins = [
+                { id: 1, name: 'Admin Name', email: 'admin@example.com' },
+                { id: 2, name: 'Admin Name 2', email: 'admin2@example.com' },
+            ];
+
+            // Function to render the admin cards
+            function renderAdmins() {
+                adminList.innerHTML = ''; // Clear current list
+
+                admins.forEach(admin => {
+                    const card = document.createElement('div');
+                    card.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'border', 'clickable');
+                    card.innerHTML = `
+                        <p class="font-semibold text-gray-800">${admin.name}</p>
+                        <p class="text-sm text-gray-500">${admin.email}</p>
+                        <div class="mt-4 flex gap-2">
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm" onclick="editAdmin(${admin.id})">Edit</button>
+                            <button class="px-4 py-2 bg-red-600 text-white rounded-lg shadow-sm" onclick="deleteAdmin(${admin.id})">Delete</button>
+                        </div>
+                    `;
+                    adminList.appendChild(card);
+                });
+            }
+
+            // Function to handle the form submission and add a new admin
+            adminForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent form from submitting
+
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value; // Password can be handled later
+
+                // Create new admin object
+                const newAdmin = {
+                    id: admins.length + 1, // Simple ID generation (can be improved)
+                    name,
+                    email
+                };
+
+                // Add new admin to the list
+                admins.push(newAdmin);
+
+                // Render updated list
+                renderAdmins();
+
+                // Reset the form
+                adminForm.reset();
+            });
+
+            // Function to handle admin deletion
+            window.deleteAdmin = function(id) {
+                const index = admins.findIndex(admin => admin.id === id);
+                if (index !== -1) {
+                    admins.splice(index, 1); // Remove admin from array
+                    renderAdmins(); // Re-render list
+                }
+            };
+
+            // Function to handle admin editing
+            window.editAdmin = function(id) {
+                const admin = admins.find(admin => admin.id === id);
+                if (admin) {
+                    // You can open an edit form or just log for now
+                    alert(`Editing: ${admin.name}`);
+                }
+            };
+
+            // Initial render of admin list
+            renderAdmins();
+        });
+    </script>
+</body>
+</html>

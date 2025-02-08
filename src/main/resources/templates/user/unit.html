@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceIT</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <script th:src="@{/js/main.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/fonts.css}">
+    <link rel="stylesheet"th:href="@{/css/scrollbar.css}">
+    <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
+
+    <style>
+        /* Ensure the circular elements maintain their aspect ratio */
+    .circle {
+        width: 4rem; /* Fixed width */
+        height: 4rem; /* Fixed height to match width */
+        border-radius: 50%; /* Make it circular */
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+        /* Customize the scrollbar thumb (scrolling bar) */
+        ::-webkit-scrollbar-thumb {
+            background: #888; /* Gray color for the scrollbar thumb */
+            border-radius: 50px; /* Full curve for the scrollbar thumb */
+            height: 20%; /* Makes the thumb shorter */
+            background-clip: padding-box;
+        }
+
+        /* Hover effect for the scrollbar thumb */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Darker gray on hover */
+        }
+
+        /* For Firefox: make scrollbar thin and short */
+        * {
+            scrollbar-width: thin; /* Thin scrollbar */
+            scrollbar-color: #888 transparent; /* Visible thumb, hidden track */
+        }
+
+        /* Optional: Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Add hover/click effects */
+        .clickable:hover {
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+
+        .clickable:active {
+            transform: scale(0.98);
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div th:insert="~{user/fragments/sidebar :: sidebar}"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 bg-white overflow-y-auto">
+        <!-- Header -->
+        <div th:insert="~{user/fragments/header :: header}"></div>
+
+        <!-- Navigation Section -->
+        <div th:insert="~{user/fragments/header :: navigation}"></div>
+
+        <div class="flex-1 bg-white overflow-y-auto p-6  scrollbar">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Form Section -->
+                <div class="hidden md:block col-span-1 p-6 rounded-lg border self-start h-fit">
+                    <h2 class="text-lg font-semibold mb-4">Create unit</h2>
+                    <form method="post" th:action="@{/t/tracking/createunit}" class="max-w-sm mx-auto">
+                        <div th:if="${error}" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                            <span class="font-medium">Error!</span> <span th:text="${error}"></span>
+                        </div>
+
+                        <div class="bg-yellow-100 mb-3 text-yellow-800 border-l-4 border-yellow-500 p-2 rounded-md text-sm">
+                            📌 <span class="font-medium">Note:</span> Location is needed for creating units.
+                        </div>
+                        <div class="mb-5">
+                            <label for="url" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Server and port</label>
+                            <input type="text" id="url" name="url" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="http://localhost:8080" required />
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="identifier" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Identifier</label>
+                            <input type="text" name="identifier" id="identifier" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="myMainCar-100" required />
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="imei" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">GPS IMEI</label>
+                            <input type="text"  name="imei" id="imei" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="AA-BBBBBB-CCCCCC-D" required />
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="licensePlate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vehicle License no.</label>
+                            <input type="text" name="licensePlate" id="licensePlate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="GH-001-222" required />
+                        </div>
+
+                        <!-- Longitude and Latitude Inputs -->
+                        <div class="mb-5 hidden">
+                            <input type="text" id="longitude" name="longitude" value=""/>
+                            <input type="text" id="latitude" name="latitude" value="" />
+                        </div>
+                        <div>
+                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Track</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Button for Small Viewport -->
+                <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm md:hidden w-full">
+                    <a href="#">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Create units and track</h5>
+                    </a>
+                    <div class="bg-yellow-100 mb-3 text-yellow-800 border-l-4 border-yellow-500 p-2 rounded-md text-sm">
+                        📌 <span class="font-medium">Note:</span> Location is needed for creating units.
+                    </div>
+                    <a href="#" id="openForm" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Start
+                        <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Data List Section -->
+                <div class="col-span-2 p-6 rounded-lg">
+                    <h2 class="text-lg font-semibold mb-4">Manage units</h2>
+
+                    <div th:if="${message}" class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+                        <span class="font-medium">Success!</span> <span th:text="${message}"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Loop through tracking data -->
+                        <th:block th:each="tracking : ${trackingData}">
+                            <div class="border-b p-4 flex row justify-between items-center  mb-3">
+                                <div class="flex row items-center gap-2 flex-wrap">
+                                    <img class="w-10 h-10 rounded-full" src="./img/app-logo.png" alt="Unit Avatar">
+                                    <p class="text-gray-700" th:text="${tracking.gpsIMEI}"></p>
+                                </div>
+                                <div class="p-3 flex">
+                                    <!-- Edit Button -->
+                                    <form method="get" th:action="@{'/t/tracking/edit_unit/' + ${tracking.id}}">
+                                        <button class="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-l-lg font-medium px-4 py-2 inline-flex space-x-1 items-center">
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                            </svg>
+                                        </span>
+                                            <span>Edit</span>
+                                        </button>
+                                    </form>
+
+                                    <form method="post" th:action="@{'/t/tracking/delete_unit/' + ${tracking.id}}">
+                                        <!-- Delete Button -->
+                                        <button class="text-slate-800 hover:text-white text-sm bg-white hover:bg-red-600 border border-slate-200 rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center">
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                            </svg>
+                                        </span>
+                                            <span>Delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Permission Toast -->
+    <div id="location-toast" class="hidden fixed bottom-4 right-4 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-lg dark:text-gray-400 dark:bg-gray-800" role="alert">
+        <div class="text-sm font-normal">
+            Location access is needed for creating units.
+        </div>
+        <div class="flex items-center ms-auto space-x-2 rtl:space-x-reverse">
+            <button onclick="requestLocationPermission()" class="text-sm font-medium text-blue-600 p-1.5 hover:bg-blue-100 rounded-lg dark:text-blue-500 dark:hover:bg-gray-700">
+                Allow
+            </button>
+            <button type="button" onclick="closeToast()" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700">
+                <span class="sr-only">Close</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l12 12m-12 0L13 1"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript to Control the Toast -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // Check if location permission was already granted
+        if (localStorage.getItem("locationAllowed") === "true") {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    saveLocation(position);
+                },
+                (error) => {
+                    console.error("Error getting location:", error.message);
+                }
+            );
+        } else {
+            // Show the toast only if permission has not been granted
+            setTimeout(() => {
+                document.getElementById("location-toast").classList.remove("hidden");
+            }, 1000);
+        }
+    });
+
+    function closeToast() {
+        document.getElementById("location-toast").classList.add("hidden");
+    }
+
+    function requestLocationPermission() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    saveLocation(position);
+                    localStorage.setItem("locationAllowed", "true"); // Save permission status
+                    closeToast(); // Hide toast after allowing
+                },
+                (error) => {
+                    console.error("Error getting location:", error.message);
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function saveLocation(position) {
+        document.getElementById("longitude").value = position.coords.longitude;
+        document.getElementById("latitude").value = position.coords.latitude;
+        localStorage.setItem("longitude", position.coords.longitude);
+        localStorage.setItem("latitude", position.coords.latitude);
+    }
+
+    // Restore saved location values if available
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem("longitude") && localStorage.getItem("latitude")) {
+            document.getElementById("longitude").value = localStorage.getItem("longitude");
+            document.getElementById("latitude").value = localStorage.getItem("latitude");
+        }
+    });
+
+    </script>
+
+    <!-- Modal -->
+    <div id="modal" class="hidden w-full fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-lg font-semibold mb-4">Create unit</h2>
+            <form class="max-w-sm mx-auto">
+                <div class="mb-5">
+                    <label for="url" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Server and port</label>
+                    <input type="text" id="url" name="url" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="http://localhost:8080" required />
+                </div>
+
+                <div class="mb-5">
+                    <label for="identifier" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Identifier</label>
+                    <input type="text" id="identifier" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="myMainCar-100" required />
+                </div>
+
+                <div class="mb-5">
+                    <label for="imei" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">GPS IMEI</label>
+                    <input type="text" id="imei" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="AA-BBBBBB-CCCCCC-D" required />
+                </div>
+
+                <div class="mb-5">
+                    <label for="licensePlate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vehicle License no.</label>
+                    <input type="text" id="licensePlate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="GH-001-222" required />
+                </div>
+
+                <!-- Longitude and Latitude Inputs -->
+                <div class="mb-5 hidden">
+                    <input type="text" id="longitude" name="longitude" />
+                    <input type="text" id="latitude" name="latitude" />
+
+                </div>
+                <div>
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Track</button>
+                </div>
+            </form>
+            <button id="closeForm" class="mt-4 text-red-600">Close</button>
+        </div>
+    </div>
+    <script th:src="@{/js/locationAccess.js}"></script>
+</div>
+</body>
+</html>

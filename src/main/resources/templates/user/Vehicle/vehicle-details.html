@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceIT</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <script th:src="@{/js/main.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/fonts.css}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
+    <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .circle {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 50px;
+            height: 20%;
+            background-clip: padding-box;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #888 transparent;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .clickable:hover {
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+        .clickable:active {
+            transform: scale(0.98);
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+<div class="flex h-screen">
+    <div th:insert="~{user/fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 bg-white overflow-y-auto">
+        <div th:insert="~{user/fragments/header :: header}"></div>
+        <div th:insert="~{user/fragments/header :: navigation}"></div>
+        <div class="flex-1 bg-white overflow-y-auto scrollbar">
+            <div class="grid grid-cols-1 gap-6">
+                <div class="md:w-2/3 w-full sm:w-full mx-auto p-6 self-start h-fit">
+                    <div class="w-full bg-white border border-gray-200 shadow-sm">
+                        <div class="flex flex-col items-center pt-4 pb-10">
+                            <img class="w-24 h-24 mb-3 rounded-full shadow-lg" th:src="${vehicle.imageUrl}" alt="Vehicle Image"/>
+                            <h5 class="mb-1 text-xl font-medium text-gray-900" th:text="${vehicle.make + ' ' + vehicle.model}"></h5>
+                            <span class="text-sm text-gray-500" th:text="${vehicle.licensePlate}"></span>
+                            <div class="flex mt-4 md:mt-6">
+                                <a th:href="@{/t/edit-vehicle/{id}(id=${vehicle.id})}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">Edit</a>
+                                <button data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="py-2 px-4 ms-2 text-sm bg-white border rounded-lg hover:bg-red-600 hover:text-white" type="button">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white w-full shadow overflow-hidden border">
+                        <div class="px-4 py-5 sm:px-6">
+                            <p class="mt-1 max-w-2xl text-sm text-gray-500">Details and information about the vehicle.</p>
+                        </div>
+                        <div>
+                            <dl>
+                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Make</dt>
+                                    <dd class="text-sm text-gray-900" th:text="${vehicle.make}"></dd>
+                                </div>
+                                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Model</dt>
+                                    <dd class="text-sm text-gray-900" th:text="${vehicle.model}"></dd>
+                                </div>
+                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Type</dt>
+                                    <dd class="text-sm text-gray-900" th:text="${vehicle.vehicleType}"></dd>
+                                </div>
+                                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">License Plate no.</dt>
+                                    <dd class="text-sm text-gray-900" th:text="${vehicle.licensePlate}"></dd>
+                                </div>
+                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Driver details</dt>
+                                    <a href class="text-sm text-blue-600 hover:underline">View more</a>
+                                </div>
+                                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Tracking details</dt>
+                                    <a href class="text-sm text-blue-600 hover:underline">View more</a>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+            <div class="p-4 md:p-5 text-center">
+                <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+                <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Deleting this vehicle will also remove all tracking data and assigned drivers. Are you sure you want to proceed?</h3>
+                <form method="post" th:action="@{/t/delete-vehicle/{id}(id=${vehicle.id})}">
+                    <button data-modal-hide="popup-modal" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                        Yes, I'm sure
+                    </button>
+                </form>
+                <button data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No, cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

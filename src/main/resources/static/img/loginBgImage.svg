@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000" fill="none">
+  <!-- Background -->
+  <rect width="1000" height="1000" fill="#F9FAFB" />
+
+  <!-- Dashed Routes -->
+  <path d="M100 200 C150 250, 200 150, 300 200" stroke="#A0AEC0" stroke-width="2" stroke-dasharray="5,5" />
+  <path d="M400 700 C450 750, 600 650, 700 700" stroke="#A0AEC0" stroke-width="2" stroke-dasharray="5,5" />
+  <path d="M200 500 C300 450, 450 550, 600 500" stroke="#A0AEC0" stroke-width="2" stroke-dasharray="5,5" />
+
+  <!-- Vehicles -->
+  <rect x="150" y="180" width="40" height="20" fill="#4A5568" rx="3" /> <!-- Small Car -->
+  <rect x="650" y="680" width="60" height="30" fill="#2B6CB0" rx="5" /> <!-- Bus -->
+  <rect x="250" y="480" width="50" height="25" fill="#48BB78" rx="4" /> <!-- Truck -->
+
+  <!-- Computers -->
+  <rect x="700" y="150" width="70" height="50" fill="#805AD5" rx="5" /> <!-- Monitor -->
+  <rect x="750" y="160" width="30" height="20" fill="#EDF2F7" /> <!-- Screen -->
+
+
+  <!-- Repeated Elements for Pattern -->
+  <rect x="200" y="750" width="40" height="20" fill="#2C7A7B" rx="3" /> <!-- Small Car -->
+  <rect x="850" y="450" width="60" height="30" fill="#2B6CB0" rx="5" /> <!-- Bus -->
+  <path d="M800 300 C850 350, 900 250, 950 300" stroke="#A0AEC0" stroke-width="2" stroke-dasharray="5,5" /> <!-- Dashed Route -->
+</svg>

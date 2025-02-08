@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <style>
+        .clickable:hover {
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+        .clickable:active {
+            transform: scale(0.98);
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('hidden');
+    }
+
+    function toggleDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('hidden');
+}
+document.addEventListener('click', function (event) {
+    const dropdown = document.getElementById('profileDropdown');
+    const button = document.getElementById('profileButton');
+
+    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const userList = document.getElementById('user-list');
+
+    // Fetch users from the backend
+    async function fetchUsers() {
+        const response = await fetch('http://localhost:8080/api/users'); // Ensure the correct port and endpoint
+        const users = await response.json();
+        renderUsers(users);
+    }
+
+    // Render user cards
+    function renderUsers(users) {
+        userList.innerHTML = ''; // Clear existing cards
+        users.forEach(user => {
+            const card = document.createElement('div');
+            card.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'border', 'clickable');
+            card.innerHTML = `
+                <p class="font-semibold text-gray-800">${user.name}</p>
+                <p class="text-gray-600">${user.email}</p>
+                <button class="text-red-600 mt-2" onclick="deleteUser(${user.id})">Delete</button>
+            `;
+            userList.appendChild(card);
+        });
+    }
+
+    // Delete user
+    async function deleteUser(id) {
+        await fetch(`http://localhost:8080/api/users/${id}`, { method: 'DELETE' }); // Include the correct port here too
+        fetchUsers();
+    }
+
+    // Add event listener to form submission
+    const userForm = document.getElementById('user-form');
+    userForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        await fetch('http://localhost:8080/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        fetchUsers();
+        userForm.reset(); // Clear form
+    });
+
+    // Initial fetch
+    fetchUsers();
+});
+
+
+</script>
+    
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-gray-100 text-gray-800 w-64 h-screen hidden md:block fixed md:relative z-40 flex flex-col">
+            <div class="px-4 py-6 flex items-center border-b border-gray-300">
+                <img src="/build/img/app-logo.png" class="w-8 h-8 rounded-full" alt="Logo">
+                <p class="text-xl ml-3 font-semibold">Brand</p>
+                <button onclick="toggleSidebar()" class="ml-auto md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <!-- Section nav -->
+            <div class="relative">
+                <div class="p-4 mt-auto">
+                    <p class="font-semibold text-gray-600 mb-2">Menu</p>
+                    <div class="flex flex-col gap-2">
+                                <!-- Dashboard Link -->
+                                <a href="index.html" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/fluency-systems-filled/50/dashboard-layout.png" alt="dashboard-layout"/>
+                                    Dashboard
+                                </a>
+                                <!-- Tracking Link -->
+                                <a href="/Tracking" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-glyphs/50/order-on-the-way.png" alt="order-on-the-way"/>
+                                    Tracking
+                                </a>
+                                <!-- Vehicles Link -->
+                                <a href="vehicle.html" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-filled/50/people-in-car-side-view.png" alt="people-in-car-side-view"/>
+                                    Vehicles
+                                </a>
+                                <!-- Drivers Link -->
+                                <a href="/Drivers" 
+                                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-glyphs/50/driver.png" alt="driver"/>
+                                    Drivers
+                                </a>
+                               
+                            </div>
+                        </div>
+                
+                <!-- Account Manage Section -->
+<div class="p-4 mt-auto">
+    <p class="font-semibold text-gray-600 mb-2">Account Manage</p>
+    <div class="flex flex-col gap-2"> 
+                <!-- Settings Link -->
+                <a href="Settings.html" 
+                class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200">
+                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/material-outlined/50/settings.png" alt="settings"/>
+                    Settings
+                </a>
+                <!-- Logout Button -->
+                <a href="/logout" 
+                class="flex items-center px-2 py-2 text-red-600 hover:bg-red-100 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" 
+                            d="M12.293 15.707a1 1 0 01-1.414 0L7 12.414l-1.293 1.293a1 1 0 01-1.414-1.414L5.586 11 3.293 8.707a1 1 0 111.414-1.414L7 9.586l3.293-3.293a1 1 0 011.414 1.414L8.414 11l3.293 3.293a1 1 0 010 1.414z" 
+                            clip-rule="evenodd" />
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+            </div>
+        </div>
+        
+
+        <!-- Main Content -->
+        <div class="flex-1 bg-white overflow-y-auto">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-300 flex items-center md:hidden">
+                <button onclick="toggleSidebar()" class="md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Navigation Section -->
+            <div class="px-6 py-4 flex items-center justify-between">
+                <!-- Breadcrumb or Title -->
+                <nav class="text-gray-600 text-sm">
+                    <span class="text-gray-800 font-semibold text-2xl">User Management</span>
+                </nav>
+
+                <div class="relative z-50">
+                    <!-- Profile Image -->
+                    <button onclick="toggleDropdown()" id="profileButton" class="relative focus:outline-none">
+                        <img src="https://via.placeholder.com/40" 
+                            alt="User Profile" 
+                            class="w-10 h-10 rounded-full border border-gray-300">
+                    </button>
+                
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" 
+                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                        <div class="py-2">
+                            <p class="px-4 py-2 text-gray-600 font-semibold">John Doe</p>
+                            <hr class="border-gray-300">
+                            <a href="Settings.html" 
+                               class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="/logout" 
+                               class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+
+
+            <!-- User Management Section -->
+            <div class="p-6">
+                <!-- Search Bar -->
+                <div class="mb-4 flex items-center gap-2">
+                    <input type="text" id="search-user" class="px-4 py-2 border rounded-lg w-full" placeholder="Search users...">
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" onclick="searchUser()">Search</button>
+                </div>
+
+                <!-- User List -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="user-list">
+                    <!-- Example User Card -->
+                </div>
+
+                <!-- Add User Form -->
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold mb-2">Add New User</h3>
+                    <form id="add-user-form" class="flex flex-col gap-4">
+                        <input type="text" id="new-user-name" class="px-4 py-2 border rounded-lg w-full" placeholder="User Name" required>
+                        <input type="email" id="new-user-email" class="px-4 py-2 border rounded-lg w-full" placeholder="User Email" required>
+                        <button type="button" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700" onclick="addUser()">Add User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let users = [
+            { id: 1, name: 'User Name', email: 'user@example.com' },
+            { id: 2, name: 'User Name2', email: 'user2@example.com' }
+        ];
+
+        // Function to render the user list
+        function renderUsers() {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = ''; // Clear current list
+
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'bg-white p-4 rounded-lg shadow border';
+                userCard.innerHTML = `
+                    <p class="font-bold text-gray-800">${user.name}</p>
+                    <p class="text-sm text-gray-500">${user.email}</p>
+                    <div class="mt-4 flex gap-2">
+                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700" onclick="deleteUser(${user.id})">Delete</button>
+                        <button class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600" onclick="restrictUser(${user.id})">Restrict</button>
+                    </div>
+                `;
+                userList.appendChild(userCard);
+            });
+        }
+
+        // Function to handle deleting a user
+        function deleteUser(userId) {
+            const userIndex = users.findIndex(u => u.id === userId);
+            if (userIndex !== -1) {
+                const user = users[userIndex];
+                if (confirm(`Are you sure you want to delete ${user.name}?`)) {
+                    users.splice(userIndex, 1);
+                    renderUsers(); // Re-render list
+                }
+            }
+        }
+
+        // Function to handle restricting a user
+        function restrictUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                alert(`${user.name} has been restricted.`);
+            }
+        }
+
+        // Function to handle adding a new user
+        function addUser() {
+            const userName = document.getElementById('new-user-name').value.trim();
+            const userEmail = document.getElementById('new-user-email').value.trim();
+
+            if (userName && userEmail) {
+                const newUser = { id: users.length + 1, name: userName, email: userEmail };
+                users.push(newUser);
+                renderUsers();
+                document.getElementById('add-user-form').reset();
+                alert(`New user added: ${userName}`);
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        // Function to search users
+        function searchUser() {
+            const query = document.getElementById('search-user').value.toLowerCase();
+            const userList = document.querySelectorAll('#user-list > div');
+
+            userList.forEach(user => {
+                const userName = user.querySelector('p.font-bold').textContent.toLowerCase();
+                if (userName.includes(query)) {
+                    user.style.display = 'block';
+                } else {
+                    user.style.display = 'none';
+                }
+            });
+        }
+
+        // Initial render of user list
+        renderUsers();
+    </script>
+</body>
+</html>

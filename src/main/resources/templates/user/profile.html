@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - TraceIT</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <script th:src="@{/js/main.js}"></script>
+    <link rel="stylesheet"th:href="@{/css/scrollbar.css}">
+    <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        /* Modal Close Button */
+        .modal .text-2xl {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        /* Hide the scrollbar track */
+        ::-webkit-scrollbar {
+            width: 10px; /* Define the width of the scrollbar */
+            background: transparent; /* Make the track invisible */
+        }
+
+        /* Customize the scrollbar thumb (scrolling bar) */
+        ::-webkit-scrollbar-thumb {
+            background: #888; /* Gray color for the scrollbar thumb */
+            border-radius: 50px; /* Full curve for the scrollbar thumb */
+            height: 20%; /* Makes the thumb shorter */
+            background-clip: padding-box;
+        }
+
+        /* Hover effect for the scrollbar thumb */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Darker gray on hover */
+        }
+
+        /* For Firefox: make scrollbar thin and short */
+        * {
+            scrollbar-width: thin; /* Thin scrollbar */
+            scrollbar-color: #888 transparent; /* Visible thumb, hidden track */
+        }
+
+        /* Optional: Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.getElementById('profileButton');
+
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-50 font-sans scrollbar">
+    <div class="flex h-screen">
+        <!--sidebar-->
+        <div th:insert="user/fragments/sidebar :: sidebar"></div>
+        <!--sidebar end-->
+
+
+        <!-- Main Content -->
+        <div class="flex-1 bg-white overflow-y-auto">
+
+            <!-- Header -->
+            <div th:insert="user/fragments/header :: header"></div>
+            <!--header end-->
+
+
+            <!-- Navigation Section -->
+            <div th:insert="user/fragments/header :: navigation"></div>
+
+            <!-- Profile Section -->
+            <div class="m-4 bg-white rounded-lg shadow">
+                <div class="px-4 py-2 text-lg font-semibold border-b border-gray-200">Profile</div>
+                <div class="p-4">
+                    <!-- Success Message -->
+                    <div th:if="${successMessage}" class="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+                        <svg class="shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 1 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <div>
+                            <span class="font-medium" th:text="${successMessage}"></span>
+                        </div>
+                    </div>
+                    <!-- Error Message -->
+                    <div th:if="${errorMessage}" class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                        <svg class="shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 1 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <div>
+                            <span class="font-medium" th:text="${errorMessage}"></span>
+                        </div>
+                    </div>
+                    <form id="profile-form" th:action="@{/t/update_profile}" method="post" class="space-y-4">
+                        <!-- Form Fields -->
+                        <div>
+                            <label for="profile-username" class="block text-sm font-medium text-gray-700">Username</label>
+                            <input type="text" id="profile-username" name="profile-username" placeholder="Enter your name"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="profile-email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="profile-email" name="profile-email" placeholder="Enter your email"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <button type="submit" class="px-4 py-2 text-white bg-gray-700 hover:bg-gray-600 rounded-md">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

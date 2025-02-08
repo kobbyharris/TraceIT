@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - TraceIT</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="stylesheet"th:href="@{/css/fonts.css}">
+    <link rel="stylesheet"th:href="@{/css/scrollbar.css}">
+    <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
+
+    <style>
+        /* Custom styles for the container and other elements */
+        .bg-custom {
+            background-color: #f8fafc;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .input-field {
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3182ce; /* Blue highlight on focus */
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+
+        .error-text {
+            color: #e53e3e; /* Red for error text */
+            font-size: 0.875rem; /* Smaller text */
+        }
+
+        .scrollbar-hide {
+            scrollbar-width: none; /* For Firefox */
+            -ms-overflow-style: none; /* For Internet Explorer and Edge */
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="bg-custom">
+
+<!-- Mobile Logo -->
+<div class="block lg:hidden w-full text-center py-4">
+    <img th:src="@{/img/vTSLogo.png}" alt="Vehicle Tracking Logo" class="w-20 mx-auto" style="border-radius: 50%;">
+</div>
+
+<div class="main-content w-full max-w-6xl mx-auto p-8">
+
+    <!-- Left Section with Benefits -->
+    <div class="hidden lg:flex lg:w-1/3 flex-col justify-center p-6 space-y-6">
+        <div class="mb-6">
+            <img th:src="@{/img/vTSLogo.png}" alt="Vehicle Tracking Logo" class="w-32 mb-4" style="border-radius: 50%;">
+        </div>
+        <h1 class="text-2xl font-semibold text-gray-800">Welcome back</h1>
+        <ul class="list-none space-y-4 text-gray-700">
+            <li class="flex items-center space-x-3">
+                <svg class="w-5 h-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M5 12l5 5L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                <span>Improved performance for free subscription</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <svg class="w-5 h-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M5 12l5 5L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                <span>Manage more with the premium subscription</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Right Section with Sign In Form -->
+    <div class="form-container lg:w-2/3 w-full">
+        <div class="w-full lg:w-3/4 max-w-md mx-auto">
+            <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Sign In</h2>
+
+            <div th:if="${error}">
+                <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                    <span class="font-medium" th:text="${error}"></span>
+                </div>
+            </div>
+
+
+            <form method="post" role="form" th:action="@{/login}" class="space-y-6">
+                <div class="input-group">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Work Email</label>
+                    <input type="email" id="email" name="email" class="input-field" placeholder="Enter your email" required>
+                    <span id="input-error-email" class="error-text hidden"></span>
+                </div>
+
+                <div class="input-group">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" class="input-field" placeholder="Enter your password" required>
+                    <span id="input-error-password" class="error-text hidden"></span>
+                </div>
+
+                <div class="input-group">
+                    <button type="submit" class="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Sign In</button>
+                </div>
+            </form>
+            <div class="text-center mt-6">
+                <p>Don't have an account? <a th:href="@{/register}" class="text-blue-500 hover:underline">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

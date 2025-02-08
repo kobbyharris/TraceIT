@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceIT</title>
+    <script th:src="@{/js/main.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/fonts.css}">
+    <link rel="stylesheet"th:href="@{/css/scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
+
+    <style>
+        /* Ensure the circular elements maintain their aspect ratio */
+    .circle {
+        width: 4rem; /* Fixed width */
+        height: 4rem; /* Fixed height to match width */
+        border-radius: 50%; /* Make it circular */
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+        /* Customize the scrollbar thumb (scrolling bar) */
+        ::-webkit-scrollbar-thumb {
+            background: #888; /* Gray color for the scrollbar thumb */
+            border-radius: 50px; /* Full curve for the scrollbar thumb */
+            height: 20%; /* Makes the thumb shorter */
+            background-clip: padding-box;
+        }
+
+        /* Hover effect for the scrollbar thumb */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Darker gray on hover */
+        }
+
+        /* For Firefox: make scrollbar thin and short */
+        * {
+            scrollbar-width: thin; /* Thin scrollbar */
+            scrollbar-color: #888 transparent; /* Visible thumb, hidden track */
+        }
+
+        /* Optional: Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Add hover/click effects */
+        .clickable:hover {
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+
+        .clickable:active {
+            transform: scale(0.98);
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div th:insert="~{user/fragments/sidebar :: sidebar}"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 bg-white overflow-y-auto">
+        <!-- Header -->
+        <div th:insert="~{user/fragments/header :: header}"></div>
+
+        <!-- Navigation Section -->
+        <div th:insert="~{user/fragments/header :: navigation}"></div>
+
+        <div class="flex-1 bg-white overflow-y-auto p-6  scrollbar">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                <!-- Form Section -->
+                <div class="md:w-2/3 lg:w-1/2 p-6 rounded-lg border self-start h-fit">
+                    <h2 class="text-lg font-semibold mb-4">Create unit</h2>
+                    <form method="get" th:action="@{'/t/tracking/edit_unit/' + ${unitId}}">
+                        <div th:if="${error}" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                            <span class="font-medium">Error!</span> <span th:text="${error}"></span>
+                        </div>
+
+                        <div class="bg-yellow-100 mb-3 text-yellow-800 border-l-4 border-yellow-500 p-2 rounded-md text-sm">
+                            📌 <span class="font-medium">Note:</span> Crosscheck before you submit.
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="url" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Server and port</label>
+                            <input type="text" id="url" name="url" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                   placeholder="http://localhost:8080" th:value="${trackingData.serverUrl}" required />
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="identifier" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Identifier</label>
+                            <input type="text" name="identifier" id="identifier" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                   placeholder="myMainCar-100" th:value="${trackingData.identifier}" required />
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="imei" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">GPS IMEI</label>
+                            <input type="text"  name="imei" id="imei" th:value="${trackingData.gpsIMEI}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="AA-BBBBBB-CCCCCC-D" required />
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="licensePlate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vehicle License no.</label>
+                            <input type="text" name="licensePlate" id="licensePlate" th:value="${trackingData.trackUnit}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                   placeholder="GH-001-222" required />
+                        </div>
+
+                        <!-- Longitude and Latitude Inputs -->
+                        <div class="mb-5 hidden">
+                            <input type="text" id="longitude" name="longitude" th:value="${trackingData.longitude}" />
+                            <input type="text" id="latitude" name="latitude" th:value="${trackingData.latitude}" />
+                        </div>
+
+                        <div>
+                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

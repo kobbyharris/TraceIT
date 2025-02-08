@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicles Page</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
+    <script th:src="@{/js/main.js}"></script>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            height: auto;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 50px;
+            height: 20%;
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #888 transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div th:insert="~{user/fragments/sidebar :: sidebar}"></div>
+    <!-- Sidebar End -->
+
+    <!-- Main Content -->
+    <div class="flex-1 bg-white overflow-y-auto">
+        <!-- Header -->
+        <div th:insert="~{user/fragments/header :: header}"></div>
+        <!-- Header End -->
+
+        <!-- Navigation Section -->
+        <div th:insert="~{user/fragments/header :: navigation}"></div>
+
+        <div class="p-6">
+            <div class="mb-6">
+                <input type="text" id="vehicleSearch" placeholder="Search by plate number"
+                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+                       oninput="filterVehicles()">
+            </div>
+
+            <!-- Vehicle Grid -->
+            <div id="vehicleList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center justify-center px-6 mx-auto h-[50vh] text-center">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200">
+                No Vehicles Available
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300 mt-4">
+                You haven't added any vehicles yet. Start tracking your fleet by adding a new vehicle.
+            </p>
+            <a href="/t/v/create"
+               class="mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                Add a Vehicle
+            </a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

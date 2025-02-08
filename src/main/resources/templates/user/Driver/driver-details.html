@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceIT</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <script th:src="@{/js/main.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/fonts.css}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
+    <link rel="shortcut icon" href="@{/img/vTSLogo.png}" type="image/x-icon">
+    <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .circle {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 50px;
+            height: 20%;
+            background-clip: padding-box;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #888 transparent;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .clickable:hover {
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+        .clickable:active {
+            transform: scale(0.98);
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+<div class="flex h-screen">
+    <div th:insert="~{user/fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 bg-white overflow-y-auto">
+        <div th:insert="~{user/fragments/header :: header}"></div>
+        <div th:insert="~{user/fragments/header :: navigation}"></div>
+        <div class="flex-1 bg-white overflow-y-auto scrollbar">
+            <div class="grid grid-cols-1 gap-6">
+                <div class="md:w-2/3 w-full sm:w-full mx-auto p-6 self-start h-fit">
+                    <div class="w-full bg-white border border-gray-200 shadow-sm">
+                        <div class="flex flex-col items-center pt-4 pb-10">
+                            <img class="w-24 h-24 mb-3 rounded-full shadow-lg" th:src="${driver.imageUrl}" alt="Driver Image"/>
+                            <h5 class="mb-1 text-xl font-medium text-gray-900" th:text="${driver.fullName}"></h5>
+                            <span class="text-sm text-gray-500" th:text="${driver.ghanaCard}"></span>
+                            <div class="flex mt-4 md:mt-6">
+                                <a th:href="@{/t/edit-driver/{id}(id=${driver.id})}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">Edit</a>
+                                <form method="post" th:action="@{/t/delete-driver/{id}(id=${driver.id})}">
+                                    <button type="submit" class="py-2 px-4 ms-2 text-sm bg-white border rounded-lg hover:bg-red-600 hover:text-white">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white w-full shadow overflow-hidden border">
+                        <div class="px-4 py-5 sm:px-6">
+                            <p class="mt-1 max-w-2xl text-sm text-gray-500">Details and information about the driver.</p>
+                        </div>
+                        <div>
+                            <dl>
+                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Full name</dt>
+                                    <dd class="text-sm text-gray-900" th:text="${driver.fullName}"></dd>
+                                </div>
+                                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Residential address</dt>
+                                    <dd class="text-sm text-gray-900" th:text="${driver.residentialAddress}"></dd>
+                                </div>
+                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Phone number</dt>
+                                    <dd class="text-sm text-gray-900" th:text="${driver.phoneNumber}"></dd>
+                                </div>
+                                <div th:if="${driver.assignedVehicleId != null}" class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">Vehicle details</dt>
+                                    <a th:href="@{/t/vehicle-details/{id}(id=${driver.assignedVehicleId})}"
+                                       class="text-sm text-blue-600 hover:underline">
+                                        View more
+                                    </a>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
