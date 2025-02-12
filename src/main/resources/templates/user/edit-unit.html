@@ -73,7 +73,7 @@
                 <!-- Form Section -->
                 <div class="md:w-2/3 lg:w-1/2 p-6 rounded-lg border self-start h-fit">
                     <h2 class="text-lg font-semibold mb-4">Create unit</h2>
-                    <form method="get" th:action="@{'/t/tracking/edit_unit/' + ${unitId}}">
+                    <form method="post" th:action="@{'/t/tracking/edit_unit/' + ${unitId}}">
                         <div th:if="${error}" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
                             <span class="font-medium">Error!</span> <span th:text="${error}"></span>
                         </div>
@@ -101,7 +101,7 @@
 
                         <div class="mb-5">
                             <label for="licensePlate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vehicle License no.</label>
-                            <input type="text" name="licensePlate" id="licensePlate" th:value="${trackingData.trackUnit}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            <input type="text" name="licensePlate" id="licensePlate" th:value="${trackingData.LicenseNumber}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                    placeholder="GH-001-222" required />
                         </div>
 
