@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicles Page</title>
+    <title>Vehicles - TraceIT</title>
     <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="shortcut icon" href="@{/img/vTSLogo.png}" type="image/x-icon">
     <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
     <script th:src="@{/js/main.js}"></script>
     <style>
@@ -74,22 +75,12 @@
         }
     </style>
 </head>
-
-<body class="bg-gray-50 font-sans leading-normal tracking-normal">
-<div class="flex h-screen">
-    <!-- Sidebar -->
-    <div th:insert="~{user/fragments/sidebar :: sidebar}"></div>
-    <!-- Sidebar End -->
-
-    <!-- Main Content -->
-    <div class="flex-1 bg-white overflow-y-auto">
-        <!-- Header -->
-        <div th:insert="~{user/fragments/header :: header}"></div>
-        <!-- Header End -->
-
-        <!-- Navigation Section -->
+<body>
+<div th:replace="~{user/fragments/sidebar :: sidebar}"></div>
+<div class="p-2 sm:ml-64">
+    <div class="px-2">
         <div th:insert="~{user/fragments/header :: navigation}"></div>
-
+        <!-- Header End -->
         <div class="p-6">
             <div class="mb-6">
                 <input type="text" id="vehicleSearch" placeholder="Search by plate number"
@@ -115,6 +106,7 @@
                 Add a Vehicle
             </a>
         </div>
+
 
     </div>
 </div>

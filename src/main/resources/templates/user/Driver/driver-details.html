@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TraceIT</title>
+    <title>Driver Details - TraceIT</title>
     <link rel="stylesheet" th:href="@{/css/output.css}">
     <script th:src="@{/js/main.js}"></script>
     <link rel="stylesheet" th:href="@{/css/fonts.css}">
     <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
     <link rel="shortcut icon" href="@{/img/vTSLogo.png}" type="image/x-icon">
     <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .circle {
             width: 4rem;
@@ -44,60 +43,81 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans leading-normal tracking-normal">
-<div class="flex h-screen">
-    <div th:insert="~{user/fragments/sidebar :: sidebar}"></div>
-    <div class="flex-1 bg-white overflow-y-auto">
-        <div th:insert="~{user/fragments/header :: header}"></div>
+<body>
+<div th:replace="~{user/fragments/sidebar :: sidebar}"></div>
+<div class="p-2 sm:ml-64">
+    <div class="px-2">
         <div th:insert="~{user/fragments/header :: navigation}"></div>
-        <div class="flex-1 bg-white overflow-y-auto scrollbar">
-            <div class="grid grid-cols-1 gap-6">
-                <div class="md:w-2/3 w-full sm:w-full mx-auto p-6 self-start h-fit">
-                    <div class="w-full bg-white border border-gray-200 shadow-sm">
-                        <div class="flex flex-col items-center pt-4 pb-10">
-                            <img class="w-24 h-24 mb-3 rounded-full shadow-lg" th:src="${driver.imageUrl}" alt="Driver Image"/>
-                            <h5 class="mb-1 text-xl font-medium text-gray-900" th:text="${driver.fullName}"></h5>
-                            <span class="text-sm text-gray-500" th:text="${driver.ghanaCard}"></span>
-                            <div class="flex mt-4 md:mt-6">
-                                <a th:href="@{/t/edit-driver/{id}(id=${driver.id})}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">Edit</a>
-                                <form method="post" th:action="@{/t/delete-driver/{id}(id=${driver.id})}">
-                                    <button type="submit" class="py-2 px-4 ms-2 text-sm bg-white border rounded-lg hover:bg-red-600 hover:text-white">Delete</button>
-                                </form>
-                            </div>
+        <!-- Header End -->
+        <div class="mx-6">
+            <div class="md:w-2/3 w-full sm:w-full mx-auto self-start h-fit">
+                <div class="w-full bg-white border border-gray-200 shadow-sm">
+                    <div class="flex flex-col items-center pt-4 pb-10">
+                        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" th:src="${driver.imageUrl}" alt="Driver Image"/>
+                        <h5 class="mb-1 text-xl font-medium text-gray-900" th:text="${driver.fullName}"></h5>
+                        <span class="text-sm text-gray-500" th:text="${driver.ghanaCard}"></span>
+                        <div class="flex mt-4 md:mt-6">
+                            <a th:href="@{/t/edit-driver/{id}(id=${driver.id})}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">Edit</a>
+                            <button data-modal-toggle="popup-modal" class="py-2 px-4 ms-2 text-sm bg-white border rounded-lg hover:bg-red-600 hover:text-white" type="button">
+                                Delete
+                            </button>
                         </div>
                     </div>
-                    <div class="bg-white w-full shadow overflow-hidden border">
-                        <div class="px-4 py-5 sm:px-6">
-                            <p class="mt-1 max-w-2xl text-sm text-gray-500">Details and information about the driver.</p>
-                        </div>
-                        <div>
-                            <dl>
-                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                                    <dt class="text-sm font-medium text-gray-500">Full name</dt>
-                                    <dd class="text-sm text-gray-900" th:text="${driver.fullName}"></dd>
-                                </div>
-                                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                                    <dt class="text-sm font-medium text-gray-500">Residential address</dt>
-                                    <dd class="text-sm text-gray-900" th:text="${driver.residentialAddress}"></dd>
-                                </div>
-                                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                                    <dt class="text-sm font-medium text-gray-500">Phone number</dt>
-                                    <dd class="text-sm text-gray-900" th:text="${driver.phoneNumber}"></dd>
-                                </div>
-                                <div th:if="${driver.assignedVehicleId != null}" class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                                    <dt class="text-sm font-medium text-gray-500">Vehicle details</dt>
-                                    <a th:href="@{/t/vehicle-details/{id}(id=${driver.assignedVehicleId})}"
-                                       class="text-sm text-blue-600 hover:underline">
-                                        View more
-                                    </a>
-                                </div>
-                            </dl>
-                        </div>
+                </div>
+                <div class="bg-white w-full shadow overflow-hidden border">
+                    <div class="px-4 py-5 sm:px-6">
+                        <p class="mt-1 max-w-2xl text-sm text-gray-500">Details and information about the driver.</p>
+                    </div>
+                    <div>
+                        <dl>
+                            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                <dt class="text-sm font-medium text-gray-500">Full name</dt>
+                                <dd class="text-sm text-gray-900" th:text="${driver.fullName}"></dd>
+                            </div>
+                            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                <dt class="text-sm font-medium text-gray-500">Residential address</dt>
+                                <dd class="text-sm text-gray-900" th:text="${driver.residentialAddress}"></dd>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                <dt class="text-sm font-medium text-gray-500">Phone number</dt>
+                                <dd class="text-sm text-gray-900" th:text="${driver.phoneNumber}"></dd>
+                            </div>
+                            <div th:if="${driver.assignedVehicleId != null}" class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                                <dt class="text-sm font-medium text-gray-500">Vehicle details</dt>
+                                <a th:href="@{/t/vehicle-details/{id}(id=${driver.assignedVehicleId})}"
+                                   class="text-sm text-blue-600 hover:underline">
+                                    View more
+                                </a>
+                            </div>
+                        </dl>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div id="popup-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="text-center">
+            <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <h3 class="mb-5 text-lg inline font-normal text-gray-500">Deleting this driver is not reversible. Are you sure?</h3>
+            <div class="flex justify-center  pt-4">
+                <form method="post" th:action="@{/t/delete-driver/{id}(id=${driver.id})}">
+                    <button type="submit" class="px-5 py-2.5 text-white bg-red-600 rounded-lg hover:bg-red-800">
+                        Yes, I'm sure
+                    </button>
+                </form>
+
+                <button data-modal-hide="popup-modal" type="button"
+                        class="px-5 py-2.5 ms-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300">
+                    No, cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/modal.js}"></script>
 </body>
 </html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Tracking Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+<div id="tracking-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+<script>
+    // Example tracking data (replace this with API response)
+    const trackingData = [
+        { identifier: "Vehicle A", status: "MOVING", img: "/placeholder.jpg" },
+        { identifier: "Vehicle B", status: "IDLE", img: "/placeholder.jpg" },
+        { identifier: "Vehicle C", status: "PARKED", img: "/placeholder.jpg" }
+    ];
+
+    // Status color mapping
+    const statusColors = {
+        MOVING: "bg-green-100 text-green-700",
+        IDLE: "bg-yellow-100 text-yellow-700",
+        PARKED: "bg-red-100 text-red-700"
+    };
+
+    // Get container
+    const container = document.getElementById("tracking-container");
+
+    // Render cards
+    trackingData.forEach(track => {
+        const card = document.createElement("div");
+        card.className = "flex items-center justify-between bg-white shadow-lg rounded-lg p-4";
+
+        card.innerHTML = `
+            <div class="flex items-center space-x-4">
+                <img src="${track.img}" alt="Vehicle" class="w-12 h-12 rounded-full object-cover">
+                <p class="text-lg font-semibold">${track.identifier}</p>
+            </div>
+            <span class="px-3 py-1 text-sm font-semibold rounded-full ${statusColors[track.status]}">
+                ${track.status}
+            </span>
+        `;
+
+        container.appendChild(card);
+    });
+</script>
+
+</body>
+</html>

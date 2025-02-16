@@ -12,7 +12,7 @@ public class Tracking {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "track_unit", referencedColumnName = "licensePlate", nullable = false)
+    @JoinColumn(name = "track_unit", referencedColumnName = "id", nullable = false)
     private Vehicle vehicle;
 
     @Column(unique = true, nullable = false)

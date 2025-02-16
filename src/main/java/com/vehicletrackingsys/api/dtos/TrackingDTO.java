@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class TrackingDTO {
     private UUID id;
-    private String trackUnit;
+    private UUID trackUnit;
     private String licenseNumber;
     private String gpsIMEI;
     private String serverUrl;
@@ -27,11 +27,11 @@ public class TrackingDTO {
         this.id = id;
     }
 
-    public String getTrackUnit() {
+    public UUID getTrackUnit() {
         return trackUnit;
     }
 
-    public void setTrackUnit(String trackUnit) {
+    public void setTrackUnit(UUID trackUnit) {
         this.trackUnit = trackUnit;
     }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -9,12 +9,18 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.9.3/mapbox-gl.js"></script>
     <link rel="stylesheet"th:href="@{/css/scrollbar.css}">
     <link rel="shortcut icon" th:href="@{/img/vTSLogo.png}" type="image/x-icon">
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Ensure the map takes the full width of the screen */
-        #map {
-            width: 100%;
-            height: 100vh; /* Full viewport height */
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         /* Floatbox styling */
@@ -30,123 +36,386 @@
             z-index: 40; /* Keep it above other content */
             overflow-y: auto; /* Add scroll if the content exceeds the screen height */
         }
+
+        @layer utilities {
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: theme('colors.gray.100'); /* #f3f4f6 */
+        border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: theme('colors.gray.300'); /* #d1d5db */
+        border-radius: 9999px;
+    }
+}
     </style>
 </head>
-<body class=" font-sans leading-normal tracking-normal">
-<div class="flex h-screen ">
-    <!-- Sidebar with Scrollable Content -->
-    <div class="mx-auto flex max-w-sm flex-col items-center gap-3 rounded-xl border border-gray-100 pt-8 text-gray-900 shadow-lg h-full">
+<body>
 
-        <!-- Fixed Navigation -->
-        <div class="w-full px-2 space-x-2 flex justify-between bg-white py-2 sticky top-0 shadow-md z-10">
-            <button id="unitsTab" class="flex items-center rounded-lg bg-blue-500 px-6 py-1 text-sm font-medium text-white outline-none transition focus:ring active:bg-blue-500 active:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+<div id="map"></div>
+<div id="toast-container"></div>
+
+<div class="fixed top-4 left-4 z-50 w-[60%] max-w-xs h-14 bg-white border border-gray-300 rounded-lg md:block hidden">
+    <div class="grid h-full grid-cols-5">
+        <button onclick="fetchUnits()" class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" viewBox="0 -960 960 960" fill="currentColor">
+                <path d="m580-512-60-34v-68l60-34 60 34v68l-60 34Zm0 92 140-80v-160l-140-80-140 80v160l140 80Zm-72 220h224q-7 26-24 42t-44 20L228-85q-33 5-59.5-15.5T138-154L85-591q-4-33 16-59t53-30l46-6v80l-36 5 54 437 290-36Zm-148-80q-33 0-56.5-23.5T280-360v-440q0-33 23.5-56.5T360-880h440q33 0 56.5 23.5T880-800v440q0 33-23.5 56.5T800-280H360Zm0-80h440v-440H360v440Zm220-220ZM218-164Z"/>
+            </svg>
+        </button>
+        <button onclick="fetchDetails()" class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M11.074 4 8.442.408A.95.95 0 0 0 7.014.254L2.926 4h8.148ZM9 13v-1a4 4 0 0 1 4-4h6V6a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h17a1 1 0 0 0 1-1v-2h-6a4 4 0 0 1-4-4Z"/>
+            </svg>
+        </button>
+        <div class="flex items-center justify-center">
+            <button class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md hover:bg-blue-700">
+                <svg class="w-4 h-4" aria-hidden="true" fill="none" viewBox="0 0 18 18">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
                 </svg>
-                Units
-            </button>
-            <button id="detailsTab" class="flex items-center rounded-lg px-4 py-1 text-sm font-medium text-gray-400 outline-none transition focus:ring active:bg-blue-500 active:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-                </svg>
-                Details
-            </button>
-            <button id="moreTab" class="flex items-center rounded-lg px-4 py-1 text-sm font-medium text-gray-400 outline-none transition focus:ring active:bg-blue-500 active:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                More
             </button>
         </div>
-
-        <!-- Scrollable Stacked Elements (Units List) -->
-        <div id="unitsContainer" class="h-full w-full px-2 overflow-y-auto flex-1 scrollbar space-y-3"></div>
-
-        <!-- Details Section -->
-        <div id="detailsSection" class="hidden p-4 bg-white rounded-lg shadow-lg mt-4">
-            <button onclick="goBack()" class="mb-2 px-4 py-2 bg-blue-500 text-white rounded">Back</button>
-            <div id="detailsContent"></div>
-        </div>
-
-        <!-- More Section -->
-        <div id="moreSection" class="hidden p-4 bg-white rounded-lg shadow-lg mt-4">
-            <h3 class="text-lg font-semibold mb-2">More Options</h3>
-            <button class="block w-full px-4 py-2 bg-gray-300 rounded mb-2">Manage Units</button>
-            <button class="block w-full px-4 py-2 bg-gray-300 rounded">Settings</button>
-        </div>
+        <button class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12.25V1m0 11.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M4 19v-2.25m6-13.5V1m0 2.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M10 19V7.75m6 4.5V1m0 11.25a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM16 19v-2"/>
+            </svg>
+        </button>
+        <button class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
+            </svg>
+        </button>
+    </div>
+    <div id="units-box" class="mt-2 p-4 border border-gray-300 rounded-lg bg-white shadow-md w-full max-w-lg mx-auto hidden">
+        <h2 class="text-lg font-semibold mb-2">Units</h2>
+        <div id="units-content" class="max-h-80 overflow-y-auto custom-scrollbar"></div>
     </div>
 
-    <!-- Main Content (Map Section) -->
-    <div class="flex-1 bg-white overflow-y-auto">
-        <div class="min-h-screen flex flex-col gap-6">
-            <div id="map"></div>
-
-            <script>
-                // Replace with your Mapbox token
-                mapboxgl.accessToken = 'pk.eyJ1IjoiNTVoYXJyeSIsImEiOiJjbTV2M2U5emIwMmVnMmlzOTEzYm9zcG05In0.IFJCmaZz8bMJevo4eWtgFw';
-
-                // Initialize the map
-                const map = new mapboxgl.Map({
-                    container: 'map',
-                    style: 'mapbox://styles/mapbox/streets-v12',
-                    zoom: 10,
-                    center: [9.360179504390425, 48.65777153727524] // Default center (matches initial fake GPS position)
-                });
-
-                // Add zoom and rotation controls
-                map.addControl(new mapboxgl.NavigationControl());
-
-                // Marker to represent the vehicle
-                const vehicleMarker = new mapboxgl.Marker()
-                    .setLngLat([9.360179504390425, 48.65777153727524]) // Initial position
-                    .addTo(map);
-
-                // Connect to the WebSocket server
-                const websocketUrl = "ws://localhost:5678"; // WebSocket server address
-                const socket = new WebSocket(websocketUrl);
-
-                // Handle WebSocket connection open
-                socket.onopen = () => {
-                    console.log("Connected to WebSocket server");
-                };
-
-                // Handle incoming WebSocket messages
-                socket.onmessage = (event) => {
-                    try {
-                        // Parse the JSON data
-                        const data = JSON.parse(event.data);
-
-                        // Extract the position (latitude and longitude)
-                        const [lat, lng] = data.position;
-                        console.log("Received Position:", { lat, lng });
-
-                        // Update the marker's position
-                        vehicleMarker.setLngLat([lng, lat]);
-
-                        // Optionally center the map on the new position
-                        map.flyTo({
-                            center: [lng, lat],
-                            speed: 0.5
-                        });
-                    } catch (err) {
-                        console.error("Error parsing WebSocket data:", err);
-                    }
-                };
-
-                // Handle WebSocket connection close
-                socket.onclose = () => {
-                    console.log("WebSocket connection closed");
-                };
-
-                // Handle WebSocket errors
-                socket.onerror = (error) => {
-                    console.error("WebSocket error:", error);
-                };
-            </script>
-        </div>
+    <!-- Details Section -->
+    <div id="details-box" class="mt-2 p-4 border border-gray-300 rounded-lg bg-white shadow-md w-full max-w-lg mx-auto hidden">
+        <h2 class="text-lg font-semibold mb-2">Details</h2>
+        <div id="details-content" class="max-h-80 overflow-y-auto custom-scrollbar"></div>
     </div>
-    <script th:src="@{/js/populateTrackUnits.js}">
-    </script>
 </div>
+<script>
+    function updateBox(content) {
+        document.getElementById('content-box').innerText = content;
+    }
+</script>
+<!--floatbottom box-->
+<div class="fixed z-50 bottom-1 left-1/2 -translate-x-1/2 w-[90%] max-w-xs bg-white border border-gray-300 rounded-lg shadow-md flex flex-col-reverse lg:hidden md:hidden">
+    <!-- Units Box -->
+    <div id="units-box" class="p-4 border-b border-gray-300 bg-white w-full hidden">
+        <h2 class="text-lg font-semibold mb-2">Units</h2>
+        <div id="units-content" class="max-h-80 overflow-y-auto custom-scrollbar"></div>
+    </div>
+
+    <!-- Details Box -->
+    <div id="details-box" class="p-4 border-b border-gray-300 bg-white w-full hidden">
+        <h2 class="text-lg font-semibold mb-2">Details</h2>
+        <div id="details-content" class="max-h-80 overflow-y-auto custom-scrollbar"></div>
+    </div>
+
+
+    <div class="grid grid-cols-5 h-14">
+        <button onclick="fetchUnits()" class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" viewBox="0 -960 960 960" fill="currentColor">
+                <path d="m580-512-60-34v-68l60-34 60 34v68l-60 34Zm0 92 140-80v-160l-140-80-140 80v160l140 80Zm-72 220h224q-7 26-24 42t-44 20L228-85q-33 5-59.5-15.5T138-154L85-591q-4-33 16-59t53-30l46-6v80l-36 5 54 437 290-36Zm-148-80q-33 0-56.5-23.5T280-360v-440q0-33 23.5-56.5T360-880h440q33 0 56.5 23.5T880-800v440q0 33-23.5 56.5T800-280H360Zm0-80h440v-440H360v440Zm220-220ZM218-164Z"/>
+            </svg>
+        </button>
+        <button onclick="fetchDetails()" class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M11.074 4 8.442.408A.95.95 0 0 0 7.014.254L2.926 4h8.148ZM9 13v-1a4 4 0 0 1 4-4h6V6a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h17a1 1 0 0 0 1-1v-2h-6a4 4 0 0 1-4-4Z"/>
+            </svg>
+        </button>
+        <div class="flex items-center justify-center">
+            <button class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md hover:bg-blue-700">
+                <svg class="w-4 h-4" aria-hidden="true" fill="none" viewBox="0 0 18 18">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                </svg>
+            </button>
+        </div>
+        <button class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12.25V1m0 11.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M4 19v-2.25m6-13.5V1m0 2.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M10 19V7.75m6 4.5V1m0 11.25a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM16 19v-2"/>
+            </svg>
+        </button>
+        <button class="flex flex-col items-center justify-center">
+            <svg class="w-4 h-4 text-gray-600 group-hover:text-blue-600" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiNTVoYXJyeSIsImEiOiJjbTV2M2U5emIwMmVnMmlzOTEzYm9zcG05In0.IFJCmaZz8bMJevo4eWtgFw';
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        zoom: 10,
+        center: [-1.7554, 4.8932]
+    });
+
+    map.addControl(new mapboxgl.NavigationControl());
+
+    const markers = {};
+    const sockets = {};
+    const errorDevices = new Set();
+    let currentIndex = 0;
+    let trackingData = [];
+
+    function showToast(identifier) {
+        const toastContainer = document.getElementById("toast-container");
+
+        const toast = document.createElement("div");
+        toast.id = `toast-${identifier}`;
+        toast.className = "flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800 transition-opacity duration-300 opacity-0";
+        toast.setAttribute("role", "alert");
+
+        toast.innerHTML = `
+            <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
+                </svg>
+                <span class="sr-only">Error icon</span>
+            </div>
+            <div class="ms-3 text-sm font-normal">${identifier} is offline.</div>
+            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+                onclick="this.parentElement.remove()" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+            </button>
+        `;
+
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove("opacity-0");
+            toast.classList.add("opacity-100");
+        }, 50);
+
+        setTimeout(() => {
+            toast.classList.add("opacity-0");
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+
+    async function fetchTrackingUnits() {
+        try {
+            const response = await fetch('http://localhost:8080/t/tracking/json');
+            trackingData = await response.json(); // Store tracking data globally
+
+            trackingData.forEach(unit => {
+                const { gpsIMEI, serverUrl, identifier, latitude, longitude, position } = unit;
+                const [lat, lng] = position || [latitude, longitude];
+
+                if (!markers[gpsIMEI]) {
+                    markers[gpsIMEI] = new mapboxgl.Marker()
+                        .setLngLat([lng, lat])
+                        .setPopup(new mapboxgl.Popup().setText(`ID: ${identifier}`))
+                        .addTo(map);
+                }
+
+                if (serverUrl && !sockets[gpsIMEI]) {
+                    const socket = new WebSocket(serverUrl);
+
+                    socket.onopen = () => console.log(`Connected to ${serverUrl}`);
+
+                    socket.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            const [newLat, newLng] = data.position || [latitude, longitude];
+
+                            if (markers[gpsIMEI]) {
+                                markers[gpsIMEI].setLngLat([newLng, newLat]);
+                            }
+                        } catch (err) {
+                            console.error(`Error processing WebSocket data for ${gpsIMEI}:`, err);
+                        }
+                    };
+
+                    socket.onerror = (error) => {
+                        console.error(`WebSocket error for ${serverUrl}:`, error);
+
+                        if (!errorDevices.has(gpsIMEI)) {
+                            errorDevices.add(gpsIMEI);
+                            showToast(identifier);
+                        }
+                    };
+
+                    socket.onclose = () => console.log(`WebSocket closed for ${serverUrl}`);
+
+                    sockets[gpsIMEI] = socket;
+                }
+            });
+
+        } catch (error) {
+            console.error("Error fetching tracking data:", error);
+        }
+    }
+
+    async function updateTrackingData() {
+        if (trackingData.length === 0) return;
+
+        const unit = trackingData[currentIndex];
+
+        if (!unit) {
+            currentIndex = 0;
+            return;
+        }
+
+        const { gpsIMEI, identifier, latitude, longitude } = unit;
+
+        // Generate new position (simulate movement)
+        const newLat = latitude + (Math.random() * 0.0005 - 0.00025);
+        const newLng = longitude + (Math.random() * 0.0005 - 0.00025);
+
+        // Calculate movement difference
+        const latDiff = Math.abs(newLat - latitude);
+        const lngDiff = Math.abs(newLng - longitude);
+        const hasMoved = latDiff > 0.000001 || lngDiff > 0.000001; // More sensitive
+
+        // Determine status based on movement and connection
+        let status;
+        if (hasMoved) {
+            status = "MOVING";
+        } else if (sockets[gpsIMEI] && sockets[gpsIMEI].readyState === WebSocket.OPEN) {
+            status = "IDLE";
+        } else {
+            status = "PARKED";
+        }
+
+        console.log(`Device: ${gpsIMEI}, Movement: ${hasMoved}, Status: ${status}, LatDiff: ${latDiff}, LngDiff: ${lngDiff}`);
+
+        const requestData = {
+            gpsIMEI,
+            identifier,
+            latitude: newLat,
+            longitude: newLng,
+            status,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/t/tracking/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const responseData = await response.json();
+            console.log(`Updated ${gpsIMEI}:`, responseData);
+
+            // Ensure marker updates correctly
+            if (markers[gpsIMEI]) {
+                markers[gpsIMEI].setLngLat([newLng, newLat]);
+            }
+        } catch (error) {
+            console.error(`Error updating tracking data for ${gpsIMEI}:`, error);
+        }
+
+        currentIndex = (currentIndex + 1) % trackingData.length;
+    }
+
+
+
+    fetchTrackingUnits();
+    setInterval(updateTrackingData, 30000); // Updates every 30 secs
+
+</script>
+
+<script>
+    // Status colors
+    const statusColors = {
+        MOVING: "bg-green-100 text-green-700",
+        IDLE: "bg-yellow-100 text-yellow-700",
+        PARKED: "bg-red-100 text-red-700"
+    };
+
+    // Function to fetch and display UNITS (Only Image, Identifier, Status)
+    async function fetchUnits() {
+        try {
+            const response = await fetch("http://localhost:8080/t/tracking/json");
+            if (!response.ok) throw new Error("Failed to fetch data");
+
+            const data = await response.json();
+            const unitsBox = document.getElementById("units-box");
+            const unitsContent = document.getElementById("units-content");
+
+            unitsBox.classList.remove("hidden");
+            document.getElementById("details-box").classList.add("hidden");
+            unitsContent.innerHTML = "";
+
+            data.forEach(track => {
+                const unit = document.createElement("div");
+                unit.className = "flex items-center space-x-4 p-3 border-b";
+
+                unit.innerHTML = `
+                    <img src="/img/car.png" class="w-10 h-10 rounded-full" alt="Vehicle">
+                    <p class="text-lg font-semibold">${track.identifier || "Unknown"}</p>
+                    <span class="px-3 py-1 text-sm font-semibold rounded-full ${statusColors[track.status] || "bg-gray-100 text-gray-700"}">
+                        ${track.status}
+                    </span>
+                `;
+
+                unitsContent.appendChild(unit);
+            });
+        } catch (error) {
+            console.error("Error fetching tracking data:", error);
+            document.getElementById("units-content").innerHTML = `<p class="text-red-500">Failed to load units.</p>`;
+        }
+    }
+
+    // Function to fetch and display FULL DETAILS
+    async function fetchDetails() {
+        try {
+            const response = await fetch("http://localhost:8080/t/tracking/json");
+            if (!response.ok) throw new Error("Failed to fetch data");
+
+            const data = await response.json();
+            const detailsBox = document.getElementById("details-box");
+            const detailsContent = document.getElementById("details-content");
+
+            detailsBox.classList.remove("hidden");
+            document.getElementById("units-box").classList.add("hidden");
+            detailsContent.innerHTML = "";
+
+            data.forEach(track => {
+                const detailCard = document.createElement("div");
+                detailCard.className = "bg-white shadow-md rounded-lg p-4 border mb-4";
+
+                detailCard.innerHTML = `
+                    <div class="flex items-center space-x-4 mb-2">
+                        <img src="/img/car.png" class="w-10 h-10 rounded-full" alt="Vehicle">
+                        <div>
+                            <p class="text-lg font-semibold">${track.identifier || "Unknown"}</p>
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full ${statusColors[track.status] || "bg-gray-100 text-gray-700"}">
+                                ${track.status}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500"><strong>GPS IMEI:</strong> ${track.gpsIMEI}</p>
+                    <p class="text-sm text-gray-500"><strong>License:</strong> ${track.licenseNumber || "N/A"}</p>
+                    <p class="text-sm text-gray-500"><strong>Latitude:</strong> ${track.latitude}</p>
+                    <p class="text-sm text-gray-500"><strong>Longitude:</strong> ${track.longitude}</p>
+                    <p class="text-sm text-gray-500"><strong>Vehicle Details:</strong> <a class="text-sm text-blue-600 hover:underline" href="/t/vehicle-details/${track.trackUnit}">View</a> </p>
+                    <p class="text-sm text-gray-500"><strong>Timestamp:</strong> ${track.timestamp}</p>
+                `;
+
+                detailsContent.appendChild(detailCard);
+            });
+        } catch (error) {
+            console.error("Error fetching tracking data:", error);
+            document.getElementById("details-content").innerHTML = `<p class="text-red-500">Failed to load details.</p>`;
+        }
+    }
+</script>
 </body>
 </html>
+

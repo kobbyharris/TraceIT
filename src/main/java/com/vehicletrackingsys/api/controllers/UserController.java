@@ -73,7 +73,6 @@ public class UserController {
             session.setAttribute("userEmail", authenticatedUser.getEmail());
             session.setAttribute("userId", authenticatedUser.getId());
             session.setAttribute("username", authenticatedUser.getUsername());
-            System.out.println((UUID)session.getAttribute("userId"));
             return "redirect:/t/dashboard";
         } else {
 

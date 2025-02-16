@@ -1,80 +1,70 @@
-<!-- Sidebar -->
-<div th:fragment="sidebar" id="sidebar"
-     class="bg-gray-100 text-gray-800 w-64 h-screen hidden md:block fixed md:relative z-40 flex flex-col overflow-y-auto">
-    <div class="px-4 py-6 flex items-center border-b border-gray-300">
-        <img th:src="@{/img/vTSLogo.png}" class="w-8 h-8 rounded-full" alt="Logo">
-        <p class="text-xl ml-3 font-semibold">TraceIT</p>
-        <button onclick="toggleSidebar()" class="ml-auto md:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-    </div>
-    <!-- Section nav -->
-    <div class="relative flex-1">
-        <div class="p-4">
-            <p class="font-semibold text-gray-600 mb-2">Menu</p>
-            <div class="flex flex-col gap-2">
-                <!-- Home Link -->
-                <a href="/t/dashboard"
-                   class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200"
-                   th:classappend="${pageLabel == 'Dashboard'} ? 'bg-gray-200 text-blue-600' : ''">
-                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/fluency-systems-filled/50/dashboard-layout.png" alt="home-layout"/>
-                    Dashboard
-                </a>
-                <!-- Tracking Link -->
-                <a href="/t/tracking"
-                   class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200"
-                   th:classappend="${pageLabel == 'Tracking'} ? 'bg-gray-200 text-blue-600' : ''">
-                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-glyphs/50/order-on-the-way.png" alt="order-on-the-way"/>
-                    Tracking
-                </a>
-                <!-- Vehicles Link -->
-                <a href="/t/vehicles"
-                   class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200"
-                   th:classappend="${pageLabel == 'Vehicles'} ? 'bg-gray-200 text-blue-600' : ''">
-                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-filled/50/people-in-car-side-view.png" alt="people-in-car-side-view"/>
-                    Vehicles
-                </a>
-                <!-- Drivers Link -->
-                <a href="/t/drivers"
-                   class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200"
-                   th:classappend="${pageLabel == 'Drivers'} ? 'bg-gray-200 text-blue-600' : ''">
-                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-glyphs/50/driver.png" alt="driver"/>
-                    Drivers
-                </a>
-                <!--Units link-->
-                <a href="/t/tracking/units"
-                   class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200"
-                   th:classappend="${pageLabel == 'Units'} ? 'bg-gray-200 text-blue-600' : ''">
-                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/ios-glyphs/50/driver.png" alt="units"/>
-                    Units
-                </a>
-            </div>
-        </div>
+<div th:fragment="sidebar" id="sidebar">
+    <button data-drawer-target="sidebar-multi-level-sidebar" data-drawer-toggle="sidebar-multi-level-sidebar" aria-controls="sidebar-multi-level-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+        <span class="sr-only">Open sidebar</span>
+        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+        </svg>
+    </button>
 
-        <!-- Account Manage Section -->
-        <div class="p-4 mt-auto">
-            <p class="font-semibold text-gray-600 mb-2">Account Manage</p>
-            <div class="flex flex-col gap-2">
-                <!-- Settings Link -->
-                <a href="/t/settings"
-                   class="flex items-center px-2 py-2 text-gray-800 hover:bg-gray-200 rounded-lg group-hover:text-blue-600 transition-all duration-200"
-                   th:classappend="${pageLabel == 'Settings'} ? 'bg-gray-200 text-blue-600' : ''">
-                    <img class="h-5 w-5 mr-3" src="https://img.icons8.com/material-outlined/50/settings.png" alt="settings"/>
-                    Settings
-                </a>
-                <!-- Logout Button -->
-                <a href="/logout"
-                   class="flex items-center px-2 py-2 text-red-600 hover:bg-red-100 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                              d="M12.293 15.707a1 1 0 01-1.414 0L7 12.414l-1.293 1.293a1 1 0 01-1.414-1.414L5.586 11 3.293 8.707a1 1 0 111.414-1.414L7 9.586l3.293-3.293a1 1 0 011.414 1.414L8.414 11l3.293 3.293a1 1 0 010 1.414z"
-                              clip-rule="evenodd" />
-                    </svg>
-                    Logout
-                </a>
+    <aside id="sidebar-multi-level-sidebar" class="fixed bg-white top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+        <div class="h-full px-3 py-4 overflow-y-auto border-r border-gray-200">
+            <div class="px-4 py-6 flex items-center">
+                <img th:src="@{/img/vTSLogo.png}" class="w-8 h-8 rounded-full" alt="Logo">
+                <p class="text-xl ml-3 font-semibold">TraceIT</p>
+                <button onclick="toggleSidebar()" class="ml-auto md:hidden">
+                </button>
             </div>
+            <ul class="space-y-2 font-medium">
+                <li>
+                    <a href="/t/dashboard"
+                       class="flex h-12 items-center gap-2 rounded-2xl px-4 transition focus-visible:outline-accent-8 hover:bg-gray-200 text-gray-800 hover:text-gray-900">
+                        <img class="h-6 w-6" th:src="@{/img/dashboard.svg}" alt="home-layout"/>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/t/tracking"
+                       class="flex h-12 items-center gap-2 rounded-2xl px-4 transition focus-visible:outline-accent-8 hover:bg-gray-200 text-gray-800 hover:text-gray-900">
+                        <img class="h-6 w-6" th:src="@{/img/tracking.svg}" alt="order-on-the-way"/>
+                        Tracking
+                    </a>
+                </li>
+                <li>
+                    <a href="/t/vehicles"
+                       class="flex h-12 items-center gap-2 rounded-2xl px-4 transition focus-visible:outline-accent-8 hover:bg-gray-200 text-gray-800 hover:text-gray-900">
+                        <img class="h-6 w-6" th:src="@{/img/vehicles.svg}" alt="people-in-car-side-view"/>
+                        Vehicles
+                    </a>
+                </li>
+                <li>
+                    <a href="/t/drivers"
+                       class="flex h-12 items-center gap-2 rounded-2xl px-4 transition focus-visible:outline-accent-8 hover:bg-gray-200 text-gray-800 hover:text-gray-900">
+                        <img class="h-6 w-6" th:src="@{/img/driver.svg}" alt="driver"/>
+                        Drivers
+                    </a>
+                </li>
+                <li>
+                    <a href="/t/tracking/units"
+                       class="flex h-12 items-center gap-2 rounded-2xl px-4 transition focus-visible:outline-accent-8 hover:bg-gray-200 text-gray-800 hover:text-gray-900">
+                        <img class="h-6 w-6" th:src="@{/img/units.svg}" alt="units"/>
+                        Units
+                    </a>
+                </li>
+                <li>
+                    <a href="/t/settings"
+                       class="flex h-12 items-center gap-2 rounded-2xl px-4 transition focus-visible:outline-accent-8 hover:bg-gray-200 text-gray-800 hover:text-gray-900">
+                        <img class="h-6 w-6" th:src="@{/img/settings.svg}" alt="settings"/>
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="/logout"
+                       class="flex h-12 items-center gap-2 rounded-2xl px-4 text-red-600 hover:bg-red-100">
+                        <img class="h-6 w-6" th:src="@{/img/logout.svg}" alt="logout"/>
+                        Logout
+                    </a>
+                </li>
+            </ul>
         </div>
-    </div>
+    </aside>
 </div>
